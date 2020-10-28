@@ -2,11 +2,11 @@ package com.stackroute.keepnote.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.stackroute.keepnote.dao.ReminderDAO;
 import com.stackroute.keepnote.exception.ReminderNotFoundException;
 import com.stackroute.keepnote.model.Reminder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /*
 * Service classes are used here to implement additional business logic/validation 
@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 * better. Additionally, tool support and additional behavior might rely on it in the 
 * future.
 * */
- @Service
- public class ReminderServiceImpl implements ReminderService {
+@Service
+public class ReminderServiceImpl implements ReminderService {
 
 	/*
 	 * Autowiring should be implemented for the ReminderDAO. (Use Constructor-based
@@ -26,8 +26,12 @@ import org.springframework.stereotype.Service;
 	 * keyword.
 	 */
 
-	@Autowired
 	private ReminderDAO reminderDAO;
+	
+	public ReminderServiceImpl(ReminderDAO reminderDAO)
+	{
+		this.reminderDAO = reminderDAO;
+	}
 
 	/*
 	 * This method should be used to save a new reminder.
@@ -35,7 +39,6 @@ import org.springframework.stereotype.Service;
 
 	public boolean createReminder(Reminder reminder) {
 		return reminderDAO.createReminder(reminder);
-
 	}
 
 	/*
@@ -43,17 +46,11 @@ import org.springframework.stereotype.Service;
 	 */
 
 	public Reminder updateReminder(Reminder reminder, int id) throws ReminderNotFoundException {
-		//return reminder;
-		boolean reminderUpdated = false;
-
-		Reminder reminder1 =  reminderDAO.getReminderById(id);
-
-		reminderUpdated = reminderDAO.updateReminder(reminder1);
-		if(reminderUpdated){
-			return reminder;
-		}else{
-			throw new ReminderNotFoundException("");
+		if(reminderDAO.updateReminder(reminder))
+		{
+			return reminderDAO.getReminderById(id);
 		}
+		return null;
 	}
 
 	/* This method should be used to delete an existing reminder. */
