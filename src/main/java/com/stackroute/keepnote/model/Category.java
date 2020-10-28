@@ -3,12 +3,18 @@ package com.stackroute.keepnote.model;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Generated;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -19,9 +25,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * If it finds any, then it will begin the process of looking through that particular 
  * Java object to recreate it as a table in your database.
  */
+
 @Entity
+@Table(name = "category")
 public class Category {
-	/*
+    /*
 	 * This class should have six fields
 	 * (categoryId,categoryName,categoryDescription,
 	 * categoryCreatedBy,categoryCreationDate,notes). Out of these six fields, the
@@ -32,112 +40,105 @@ public class Category {
 	 * always initialized with the system date. annotate notes field with @OneToMany
 	 * and @JsonIgnore
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	int categoryId;
-	@Column(nullable = false)
-	String categoryName;
-	@Column(nullable = false)
-	String categoryDescription;
-	@Column(nullable = false)
-	String categoryCreatedBy;
-	
-	Date categoryCreationDate;
-	
-	
-	@OneToMany
-	@JsonIgnore
-	List<Note> notes;
 
-	public Category() {
+    public Category() {
 
-	}
+    }
 
-	
+    public Category(int categoryId, String categoryName, String categoryDescription,
+                    Date categoryCreationDate, String categoryCreatedBy, List<Note> notes) {
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.categoryDescription = categoryDescription;
+        this.categoryCreatedBy = categoryCreatedBy;
+        this.categoryCreationDate = categoryCreationDate;
+        this.notes = notes;
+    }
 
-	public Category(int categoryId, String categoryName, String categoryDescription,Date categoryCreationDate,
-	 String categoryCreatedBy,List<Note> notes) {
-		super();
-		this.categoryId = categoryId;
-		this.categoryName = categoryName;
-		this.categoryDescription = categoryDescription;
-		this.categoryCreatedBy = categoryCreatedBy;
-		this.categoryCreationDate = categoryCreationDate;
-		this.notes = notes;
-	}
+    @Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_id")
+    private int categoryId;
+
+    @Column(name = "category_name")
+    private String categoryName;
+
+    @Column(name = "category_description")
+    private String categoryDescription;
+
+    @Column(name = "category_creation_date")
+    private Date categoryCreationDate;
+
+    @Column(name = "category_created_by")
+    private String categoryCreatedBy;
 
 
-
-	public int getCategoryId() {
-		return categoryId;
-	}
-
-
-
-	public void setCategoryId(int categoryId) {
-		this.categoryId = categoryId;
-	}
+	/*@OneToMany(cascade=CascadeType.ALL)
+	@JoinTable(name="user_roles",
+			joinColumns={@JoinColumn(name="role_id", referencedColumnName="id")},
+			inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")})*/
 
 
+    @JsonIgnore
+    @OneToMany
+	/*@JoinTable(name="category_note",
+			joinColumns={@JoinColumn(name="note_noteId", referencedColumnName="noteId")},
+			inverseJoinColumns={@JoinColumn(name="category_categoryId", referencedColumnName="categoryId")})*/
+    private List<Note> notes;
 
-	public String getCategoryName() {
-		return categoryName;
-	}
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
 
+    public int getCategoryId() {
+        return categoryId;
+    }
 
+    public String getCategoryName() {
+        return categoryName;
+    }
 
-	public void setCategoryName(String categoryName) {
-		this.categoryName = categoryName;
-	}
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
 
+    public String getCategoryDescription() {
+        return categoryDescription;
+    }
 
+    public void setCategoryDescription(String categoryDescription) {
+        this.categoryDescription = categoryDescription;
+    }
 
-	public String getCategoryDescription() {
-		return categoryDescription;
-	}
+    public Date getCategoryCreationDate() {
+        return categoryCreationDate;
+    }
 
+    public void setCategoryCreationDate(Date categoryCreationDate) {
+        this.categoryCreationDate = categoryCreationDate;
+    }
 
+    public String getCategoryCreatedBy() {
+        return categoryCreatedBy;
+    }
 
-	public void setCategoryDescription(String categoryDescription) {
-		this.categoryDescription = categoryDescription;
-	}
+    public void setCategoryCreatedBy(String categoryCreatedBy) {
+        this.categoryCreatedBy = categoryCreatedBy;
+    }
 
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
+    }
 
+    public List<Note> getNotes() {
+        return notes;
+    }
 
-	public String getCategoryCreatedBy() {
-		return categoryCreatedBy;
-	}
-
-
-
-	public void setCategoryCreatedBy(String categoryCreatedBy) {
-		this.categoryCreatedBy = categoryCreatedBy;
-	}
-
-
-
-	public Date getCategoryCreationDate() {
-		return categoryCreationDate;
-	}
-
-
-
-	public void setCategoryCreationDate(Date categoryCreationDate) {
-		this.categoryCreationDate = categoryCreationDate;
-	}
-
-
-
-	public List<Note> getNotes() {
-		return notes;
-	}
-
-
-
-	public void setNotes(List<Note> notes) {
-		this.notes = notes;
-	}
-
-	
+    @Override
+    public String toString() {
+        return "Category [categoryId=" + categoryId + ", categoryName=" + categoryName + ", categoryDescription="
+                + categoryDescription + ", categoryCreationDate=" + categoryCreationDate + ", categoryCreatedBy="
+                + categoryCreatedBy + ", notes=" + notes + "]";
+    }
 
 }

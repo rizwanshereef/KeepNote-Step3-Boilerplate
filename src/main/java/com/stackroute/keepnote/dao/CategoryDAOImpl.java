@@ -1,16 +1,15 @@
 package com.stackroute.keepnote.dao;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.transaction.Transactional;
-
+import com.stackroute.keepnote.exception.CategoryNotFoundException;
+import com.stackroute.keepnote.model.Category;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import com.stackroute.keepnote.exception.CategoryNotFoundException;
-import com.stackroute.keepnote.model.Category;
+
+import java.util.List;
 
 /*
  * This class is implementing the UserDAO interface. This class has to be annotated with 
@@ -21,85 +20,149 @@ import com.stackroute.keepnote.model.Category;
  * 					transaction. The database transaction happens inside the scope of a persistence 
  * 					context.  
  * */
+
 @Repository
-@Transactional
+//@Transactional
 public class CategoryDAOImpl implements CategoryDAO {
 
-	/*
-	 * Autowiring should be implemented for the SessionFactory.(Use
-	 * constructor-based autowiring.
-	 */
-	private SessionFactory sessionFactory;
-	
-	@Autowired
-	public CategoryDAOImpl(SessionFactory sessionFactory) {
-		this.sessionFactory=sessionFactory;
-	}
+    /*
+     * Autowiring should be implemented for the SessionFactory.(Use
+     * constructor-based autowiring.
+     */
+    @Autowired
+    private SessionFactory sessionFactory;
 
-	/*
-	 * Create a new category
-	 */
-	public boolean createCategory(Category category) {
-		category.setCategoryCreationDate(new Date());
-		sessionFactory.getCurrentSession().save(category);
-		sessionFactory.getCurrentSession().flush();
-		return true;
+    //private Session session;
 
-	}
+    public CategoryDAOImpl(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
-	/*
-	 * Remove an existing category
-	 */
-	public boolean deleteCategory(int categoryId) {
-		Category n;
-	       try {
-	           n = getCategoryById(categoryId);
-	           if(n!=null)
-	           {
-	                sessionFactory.getCurrentSession().createQuery("Delete From Category where categoryId=:id").setParameter("id", categoryId).executeUpdate();
-	           return true;
-	       }    
-	       } catch (CategoryNotFoundException e) {
-	           
-	           e.printStackTrace();
-	       }
-	       return false;
+    /*
+     * Create a new category
+     */
+    public boolean createCategory(Category category) {
 
-	}
+        boolean isSuccess = true;
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        boolean isCategoryCreated = true;
+        /*Category category1 = null;
+
+		try {
+			category1 = getCategoryById(category.getCategoryId());
+		} catch (CategoryNotFoundException e) {
+			e.printStackTrace();
+		}*/
+
+        try {
+            transaction = session.beginTransaction();
+            //if(category1 == null)
+            sessionFactory.getCurrentSession().persist(category);
+            transaction.commit();
+        } catch (Exception exception) {
+            isCategoryCreated = false;
+        } finally {
+            session.close();
+        }
+        return isCategoryCreated;
+    }
+
+    /*
+     * Remove an existing category
+     */
+    public boolean deleteCategory(int categoryId) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+
+        boolean isCategoryDeleted = true;
+        Category category = new Category();
+        category.setCategoryId(categoryId);
+        try {
+            transaction = session.beginTransaction();
+            sessionFactory.getCurrentSession().delete(category);
+            transaction.commit();
+        } catch (Exception exception) {
+            isCategoryDeleted = false;
+        } finally {
+            session.close();
+        }
+        return isCategoryDeleted;
+    }
 	/*
 	 * Update an existing category
 	 */
 
-	public boolean updateCategory(Category category) {
-		sessionFactory.getCurrentSession().update(category);
-		sessionFactory.getCurrentSession().flush();
-		return true;
+    public boolean updateCategory(Category category) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
 
-	}
+        boolean isCategoryUpdated = true;
+
+        Category category1 = null;
+
+		/*try {
+			transaction = session.beginTransaction();
+			category1 = getCategoryById(category.getCategoryId());
+			transaction.commit();
+		} catch (CategoryNotFoundException e) {
+			e.printStackTrace();
+		}*/
+
+        try {
+            transaction = session.beginTransaction();
+            //if(category1 == null)
+            sessionFactory.getCurrentSession().saveOrUpdate(category);
+            transaction.commit();
+        } catch (Exception exception) {
+            isCategoryUpdated = false;
+        } finally {
+            session.close();
+        }
+
+        return isCategoryUpdated;
+
+    }
 	/*
 	 * Retrieve details of a specific category
 	 */
 
-	public Category getCategoryById(int categoryId) throws CategoryNotFoundException {
-		Category n = sessionFactory.getCurrentSession().get(Category.class,categoryId);
-		
-		if(n!=null) {
-			return n;
-		}
-		else {
-			throw new CategoryNotFoundException("Category not found");
-		}
+    public Category getCategoryById(int categoryId) throws CategoryNotFoundException {
+        Session session = sessionFactory.getCurrentSession();
+        String hql = "from Category where category_id= ?";
+        Query query = session.createQuery(hql).setParameter(0, categoryId);
 
-	}
+        List<Category> listUser = null;
+        try {
+            listUser = (List<Category>) query.list();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
-	/*
-	 * Retrieve details of all categories by userId
-	 */
-	public List<Category> getAllCategoryByUserId(String userId) {
-		@SuppressWarnings("unchecked")
-		Query<Category> query = sessionFactory.getCurrentSession().createQuery("From Category where categoryCreatedBy=:user").setParameter("user", userId);
-	     return query.getResultList();
+        if (listUser != null && !listUser.isEmpty()) {
+            return listUser.get(0);
+        } else {
+            throw new CategoryNotFoundException("");
+        }
 
-	}
+    }
+
+    /*
+     * Retrieve details of all categories by userId
+     */
+    public List<Category> getAllCategoryByUserId(String userId) {
+        String hql = "from Category where category_created_by= ?";
+        Query query = sessionFactory.getCurrentSession().createQuery(hql).setParameter(0, userId);
+
+        @SuppressWarnings("unchecked")
+        List<Category> listUser = (List<Category>) query.list();
+
+        if (listUser != null && !listUser.isEmpty()) {
+            return listUser;
+        }
+
+        return null;
+
+    }
 
 }

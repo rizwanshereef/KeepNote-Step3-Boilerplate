@@ -4,7 +4,10 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /*
  * The class "User" will be acting as the data model for the User Table in the database. 
@@ -14,83 +17,91 @@ import javax.persistence.Id;
  * Java object to recreate it as a table in your database.
  */
 @Entity
+@Table(name = "noteuser")
 public class User {
 
 	/*
-	 * This class should have five fields (userId,userName,
+     * This class should have five fields (userId,userName,
 	 * userPassword,userMobile,userAddedDate). Out of these five fields, the field
 	 * userId should be the primary key. This class should also contain the getters
 	 * and setters for the fields, along with the no-arg , parameterized constructor
 	 * and toString method.The value of userAddedDate should not be accepted from
 	 * the user but should be always initialized with the system date
 	 */
-	@Id
-	private String userId;
-	@Column(nullable = false)
-	private String userName;
-	@Column(nullable = false)
-	private String userPassword;
-	@Column(nullable = false)
-	private String userMobile;
-	@Column(nullable = false)
-	private Date userAddedDate;
-	
 
-	public User() {
+    public User() {
 
-	}
+    }
 
-	public User(String userId, String userName, String userPassword, String userMobile, Date userAddedDate) {
-		super();
-		this.userId = userId;
-		this.userName = userName;
-		this.userPassword = userPassword;
-		this.userMobile = userMobile;
-		this.userAddedDate = userAddedDate;
-	}
+    public User(String userId, String userName, String userPassword, String userMobile, Date userAddedDate) {
+        super();
+        this.userId = userId;
+        this.userName = userName;
+        this.userPassword = userPassword;
+        this.userMobile = userMobile;
+        this.userAddedDate = userAddedDate;
+    }
 
-	public String getUserId() {
-		return userId;
-	}
+    @Id
+    @Column(name = "user_id")
+    private String userId;
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    @Column(name = "user_name")
+    private String userName;
 
-	public String getUserName() {
-		return userName;
-	}
+    @Column(name = "user_password")
+    private String userPassword;
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    @Column(name = "user_mobile")
+    private String userMobile;
 
-	public String getUserPassword() {
-		return userPassword;
-	}
+    @Column(name = "user_added_date")
+    private Date userAddedDate;
 
-	public void setUserPassword(String userPassword) {
-		this.userPassword = userPassword;
-	}
+    public String getUserId() {
+        return userId;
+    }
 
-	public String getUserMobile() {
-		return userMobile;
-	}
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
-	public void setUserMobile(String userMobile) {
-		this.userMobile = userMobile;
-	}
+    public String getUserName() {
+        return userName;
+    }
 
-	public Date getUserAddedDate() {
-		return userAddedDate;
-	}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	public void setUserAddedDate(Date userAddedDate) {
-		this.userAddedDate = userAddedDate;
-	}
+    public String getUserPassword() {
+        return userPassword;
+    }
 
-	
+    public void setUserPassword(String userPassword) {
+        this.userPassword = userPassword;
+    }
 
-	
+    public String getUserMobile() {
+        return userMobile;
+    }
+
+    public void setUserMobile(String userMobile) {
+        this.userMobile = userMobile;
+    }
+
+    public Date getUserAddedDate() {
+        return userAddedDate;
+    }
+
+    public void setUserAddedDate(Date userAddedDate) {
+        this.userAddedDate = userAddedDate;
+    }
+
+    @Override
+    public String toString() {
+        return "User [userId=" + userId + ", userName=" + userName + ", userPassword=" + userPassword + ", userMobile="
+                + userMobile + ", userAddedDate=" + userAddedDate + "]";
+    }
 
 }
